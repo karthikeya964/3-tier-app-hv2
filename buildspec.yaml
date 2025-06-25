@@ -4,11 +4,9 @@ env:
   variables:
     ACCOUNT_ID: 235494798709
     REGION: us-east-1
-    REPO_NAME: test
-    IMAGE_TAG: v12
-    IMAGE_URI: 235494798709.dkr.ecr.us-east-1.amazonaws.com/test:v12
+    IMAGE_REPO: test
     SONAR_PROJECT_KEY: capstone-project-sonar
-    SONAR_HOST_URL: http://3.87.184.9
+    SONAR_HOST_URL: http://44.203.137.205
     SONAR_TOKEN: sqp_53a12545f0fd992081b5d8c63bf7c232ae16e67e
 
 phases:
@@ -18,10 +16,12 @@ phases:
     commands:
       - echo Installing Maven and Docker...
       - yum install -y maven docker
+      - export IMAGE_TAG=v1.${CODEBUILD_BUILD_NUMBER}
       - echo Installing Trivy...
       - wget https://github.com/aquasecurity/trivy/releases/download/v0.63.0/trivy_0.63.0_Linux-64bit.tar.gz
-      - tar -zxvf trivy_0.63.0_Linux-64bit.tar.gz
+      - tar -xzf trivy_0.63.0_Linux-64bit.tar.gz
       - mv trivy /usr/local/bin/
+      - trivy --version
 
   pre_build:
     commands:
@@ -30,29 +30,31 @@ phases:
 
   build:
     commands:
-      - echo Running SonarQube analysis...
+      - echo Building Spring Boot JAR...
       - cd app-tier
       - mvn clean package -DskipTests
-      - mvn clean verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN -DskipTests
+      - echo Running SonarQube analysis...
+      - mvn clean verify sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_TOKEN
       - echo Building Docker image...
-      - docker build -t $REPO_NAME:$IMAGE_TAG .
-      - docker tag $REPO_NAME:$IMAGE_TAG $IMAGE_URI
-      - cd ..
+      - docker build -t "${IMAGE_REPO}:${IMAGE_TAG}" .
+      - docker tag "${IMAGE_REPO}:${IMAGE_TAG}" "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${IMAGE_REPO}:${IMAGE_TAG}"
+      - cd -
+      - mkdir -p trivy-reports
+      - trivy image --severity HIGH,CRITICAL --exit-code 0 --format table -o trivy-reports/image-report.txt "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${IMAGE_REPO}:${IMAGE_TAG}" || true
 
   post_build:
     commands:
       - echo Pushing image to Amazon ECR...
-      - docker push $IMAGE_URI
-      - echo Scanning image with Trivy...
-      - trivy image $IMAGE_URI --severity CRITICAL,HIGH || true
+      - docker push "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${IMAGE_REPO}:${IMAGE_TAG}"
       - echo Preparing Kubernetes manifests...
       - mkdir -p k8s-out
-      - sed "s|IMAGE_PLACEHOLDER|$IMAGE_URI|g" k8s/deployment.yaml > k8s-out/deployment.yaml
+      - sed "s|image_url|${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${IMAGE_REPO}:${IMAGE_TAG}|g" k8s/deployment.yaml > k8s-out/deployment.yaml
       - cp k8s/service.yaml k8s-out/service.yaml
       - echo Done preparing artifacts.
-                        
+
 artifacts:
-  base-directory: k8s-out
   files:
-    - deployment.yaml
-    - service.yaml
+    - k8s-out/deployment.yaml
+    - k8s-out/service.yaml
+    - trivy-reports/*
+  discard-paths: yes
