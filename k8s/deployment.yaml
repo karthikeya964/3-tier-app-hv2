@@ -16,13 +16,13 @@ spec:
     spec:
       containers:
         - name: todo-app
-          image: 235494798709.dkr.ecr.us-east-1.amazonaws.com/test:v12
+          image: 235494798709.dkr.ecr.us-west-1.amazonaws.com/test:v12
           imagePullPolicy: Always
           ports:
             - containerPort: 80
           env:
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:mysql://mydb-h.cdeyuc8yoid6.us-east-1.rds.amazonaws.com:3306/todo
+              value: jdbc:mysql://mydb-h.cdeyuc8yoid6.us-west-1.rds.amazonaws.com:3306/todo
             - name: SPRING_DATASOURCE_USERNAME
               value: admin
             - name: SPRING_DATASOURCE_PASSWORD
