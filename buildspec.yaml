@@ -16,9 +16,11 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
-      - echo Installing Maven and Docker...
-      - yum install -y maven docker
-      - echo Installing Trivy...
+      - echo Installing Maven, Docker, kubectl, and Trivy...
+      - yum install -y maven docker curl unzip
+      - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      - chmod +x kubectl
+      - mv kubectl /usr/local/bin/
       - wget https://github.com/aquasecurity/trivy/releases/download/v0.63.0/trivy_0.63.0_Linux-64bit.tar.gz
       - tar -zxvf trivy_0.63.0_Linux-64bit.tar.gz
       - mv trivy /usr/local/bin/
@@ -49,8 +51,10 @@ phases:
       - mkdir -p k8s-out
       - sed "s|IMAGE_PLACEHOLDER|$IMAGE_URI|g" k8s/deployment.yaml > k8s-out/deployment.yaml
       - cp k8s/service.yaml k8s-out/service.yaml
-      - echo Done preparing artifacts.
-
+      - echo Applying manifests to EKS cluster...
+      - aws eks update-kubeconfig --region $REGION --name MyEKSCluster
+      - kubectl apply -f k8s-out/deployment.yaml
+      - kubectl apply -f k8s-out/service.yaml
 artifacts:
   base-directory: k8s-out
   files:
