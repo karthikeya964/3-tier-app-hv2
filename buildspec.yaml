@@ -11,19 +11,20 @@ env:
     SONAR_HOST_URL: http://44.206.246.48
     SONAR_TOKEN: sqp_53a12545f0fd992081b5d8c63bf7c232ae16e67e
 
+
 phases:
   install:
     runtime-versions:
       java: corretto17
     commands:
-      - echo Installing Maven, Docker, kubectl, and Trivy...
-      - yum install -y maven docker curl unzip
-      - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-      - chmod +x kubectl
-      - mv kubectl /usr/local/bin/
+      - echo Installing Maven and Docker...
+      - yum install -y maven docker
+      - echo Installing Trivy...
       - wget https://github.com/aquasecurity/trivy/releases/download/v0.63.0/trivy_0.63.0_Linux-64bit.tar.gz
       - tar -zxvf trivy_0.63.0_Linux-64bit.tar.gz
       - mv trivy /usr/local/bin/
+
+
 
   pre_build:
     commands:
