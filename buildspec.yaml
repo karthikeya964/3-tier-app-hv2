@@ -6,7 +6,7 @@ env:
     REGION: us-east-1
     IMAGE_REPO: test
     SONAR_PROJECT_KEY: capstone-project-sonar
-    SONAR_HOST_URL: http://3.91.186.181
+    SONAR_HOST_URL: http://52.3.130.164
     SONAR_TOKEN: sqp_53a12545f0fd992081b5d8c63bf7c232ae16e67e
 
 phases:
