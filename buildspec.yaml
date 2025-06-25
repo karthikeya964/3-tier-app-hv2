@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     ACCOUNT_ID: 235494798709
-    REGION: us-east-1
+    REGION: us-west-1
     IMAGE_REPO: test
     SONAR_PROJECT_KEY: capstone-project-sonar
     SONAR_HOST_URL: http://52.3.130.164
