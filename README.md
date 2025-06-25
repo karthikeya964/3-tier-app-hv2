@@ -43,7 +43,8 @@ This project demonstrates how to architect and deploy a production-ready, fault-
 | Disaster Recovery | Active/Passive regions with automated DNS failover                 |
 
 ---
-                     🌐 Internet Users
+
+                                      🌐 Internet Users
                             |
                        [ AWS Route 53 ]
                       /                 \
@@ -56,6 +57,7 @@ This project demonstrates how to architect and deploy a production-ready, fault-
    [ Spring Boot App ]                    [ Spring Boot App ]
           |                                      |
      [ RDS MySQL ]                          [ RDS MySQL ]
+
 
 
 
