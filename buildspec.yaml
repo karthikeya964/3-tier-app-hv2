@@ -11,7 +11,6 @@ env:
     SONAR_HOST_URL: http://44.206.246.48
     SONAR_TOKEN: sqp_53a12545f0fd992081b5d8c63bf7c232ae16e67e
 
-
 phases:
   install:
     runtime-versions:
@@ -23,8 +22,6 @@ phases:
       - wget https://github.com/aquasecurity/trivy/releases/download/v0.63.0/trivy_0.63.0_Linux-64bit.tar.gz
       - tar -zxvf trivy_0.63.0_Linux-64bit.tar.gz
       - mv trivy /usr/local/bin/
-
-
 
   pre_build:
     commands:
@@ -52,10 +49,8 @@ phases:
       - mkdir -p k8s-out
       - sed "s|IMAGE_PLACEHOLDER|$IMAGE_URI|g" k8s/deployment.yaml > k8s-out/deployment.yaml
       - cp k8s/service.yaml k8s-out/service.yaml
-      - echo Applying manifests to EKS cluster...
-      - aws eks update-kubeconfig --region $REGION --name MyEKSCluster
-      - kubectl apply -f k8s-out/deployment.yaml
-      - kubectl apply -f k8s-out/service.yaml
+      - echo Done preparing artifacts.
+                        
 artifacts:
   base-directory: k8s-out
   files:
