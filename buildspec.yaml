@@ -6,7 +6,7 @@ env:
     REGION: us-east-1
     IMAGE_REPO: test
     SONAR_PROJECT_KEY: capstone-project-sonar
-    SONAR_HOST_URL: http://44.203.137.205
+    SONAR_HOST_URL: http://3.91.186.181
     SONAR_TOKEN: sqp_53a12545f0fd992081b5d8c63bf7c232ae16e67e
 
 phases:
@@ -16,7 +16,7 @@ phases:
     commands:
       - echo Installing Maven and Docker...
       - yum install -y maven docker
-      - export IMAGE_TAG=v1.${CODEBUILD_BUILD_NUMBER}
+      - export IMAGE_TAG=v13
       - echo Installing Trivy...
       - wget https://github.com/aquasecurity/trivy/releases/download/v0.63.0/trivy_0.63.0_Linux-64bit.tar.gz
       - tar -xzf trivy_0.63.0_Linux-64bit.tar.gz
