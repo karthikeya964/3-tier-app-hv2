@@ -21,8 +21,9 @@ Final-capstone-project
 This project demonstrates how to architect and deploy a production-ready, fault-tolerant multi-tier web application using **Amazon Web Services (AWS)** across **two regions**. It uses a mix of **CloudFormation and Terraform** for IaC, **Amazon EKS** for container orchestration, and **Amazon RDS MySQL** for persistent storage. **Route 53** ensures seamless routing and failover.
 
 ---
-
+**
  2. Application Details
+ 
 - **Repository**: [Capstone-Final-hv2](https://github.com/karthikeya964/Capstone-Final-hv2)
 - **Application Framework**: Spring Boot + Thymeleaf
 - **Database**: MySQL (via RDS)
@@ -76,9 +77,7 @@ This project demonstrates how to architect and deploy a production-ready, fault-
 - Alternatively, use AWS CodePipeline to automate deployment from GitHub
 
 ---
-
  6. Terraform Setup – Region B (Secondary)
-
  🛠 Resources:
 - `provider` block to configure region
 - Reusable modules for VPC and EKS
@@ -89,7 +88,6 @@ cd region-2-terraform
 terraform init
 terraform apply
 
-
 7. DNS and Global Routing
 🌐 Failover Mechanism (Route 53):
 Record Type	Region	Routing Policy	Health Check
@@ -97,7 +95,6 @@ A (Alias)	us-east-1	Primary	Enabled
 A (Alias)	us-west-2	Secondary	Disabled
 
 If the primary ALB fails health checks, traffic is routed automatically to the secondary ALB.
-
 
 8. CI/CD Workflow
 🧰 Toolchain:
@@ -108,7 +105,19 @@ ECR (optional)	Container image registry
 CodeDeploy	(Optional) Rolling or Blue-Green deployments
 S3	Stores build artifacts (optional)
 
-
+🧪 Sample buildspec.yml
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      java: corretto11
+  build:
+    commands:
+      - mvn clean package
+      - kubectl apply -f deployment.yaml
+artifacts:
+  files: ["**/*"]
+  
 9. Monitoring & Notifications
 📡 Key Alerts:
 Metric	Condition	Action
@@ -127,6 +136,11 @@ Enable WAF and Shield for ALB
 Integrate Prometheus + Grafana for observability
 Extend pipeline with automated tests and canary deployments
 Add cost optimization monitoring (e.g., via AWS Cost Explorer)
+
+12. Maintainer
+👨‍💻 D. Karthikeya
+GitHub: @karthikeya964
+Project: Capstone Final HV2 - AWS Multi-Region App
 
 📌 Common Commands
 aws eks update-kubeconfig --region <region> --name <cluster>
